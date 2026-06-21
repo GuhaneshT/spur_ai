@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_name: str = "spur ai chat"
     database_url: str = "sqlite:///./dev.db"
+    frontend_origin: str = "http://localhost:5173"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
     llm_timeout_seconds: int = 12
