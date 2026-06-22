@@ -4,6 +4,10 @@ Mini AI support agent for a live chat widget. The app lets a user chat with a fi
 
 Built for the Spur Founding Full-Stack Engineer take-home.
 
+## Screenshot
+
+![Spur AI Live Chat Agent](image.png)
+
 ## Stack
 
 | Area | Choice |
@@ -14,7 +18,7 @@ Built for the Spur Founding Full-Stack Engineer take-home.
 | LLM | OpenAI Chat Completions |
 | Testing | Pytest |
 
-The assignment prefers TypeScript on the backend, but allows using whatever helps move quickly. I used FastAPI because it gives strong request validation, clean dependency injection, and a small amount of framework code for this scope.
+I used FastAPI because it gives strong request validation, clean dependency injection, and a small amount of framework code for this scope.
 
 ## Features
 
@@ -134,7 +138,9 @@ Frontend:
 
 ## Database and Seed Data
 
-SQLite is used by default. On backend startup, the app:
+SQLite is used by default for local development. The deployed Render backend uses Render Postgres by setting `DATABASE_URL` to the database's internal connection string. SQLAlchemy handles both databases through the same repository/model layer, and `psycopg2-binary` is included in `backend/requirements.txt` for Postgres support.
+
+On backend startup, the app:
 
 1. Creates tables from SQLAlchemy models.
 2. Seeds FAQ knowledge if the `knowledge_items` table is empty.
@@ -150,7 +156,7 @@ Seeded knowledge covers:
 - cancellation
 - payment methods
 
-The local database file is `backend/dev.db` and is ignored by git.
+The local SQLite file is `backend/dev.db` and is ignored by git. In production, conversations and messages persist in Render Postgres.
 
 ## API
 
@@ -238,28 +244,13 @@ Covered:
 - missing history returns `404`
 - rate limit returns `429`
 
-## Deployment Notes
-
-Suggested deployment:
-
-- Frontend: Vercel or Netlify
-- Backend: Render
-- Database: SQLite for the exercise, PostgreSQL for a more production-like deployment
-
-For deployment, set:
-
-- backend `FRONTEND_ORIGIN` to the deployed frontend URL
-- frontend `VITE_API_BASE_URL` to the deployed backend URL
-- backend `OPENAI_API_KEY` to a valid key with available quota
-
-SQLite is fine for local/demo use. For a persistent hosted deployment, PostgreSQL would be the next upgrade.
-
 ## Trade-offs and Future Work
 
 - Backend is FastAPI instead of TypeScript. I chose speed, validation, and clean layering for this exercise.
 - Rate limiting is in memory. Production should use Redis.
 - FAQ retrieval is keyword based. Vector search or embeddings would improve recall.
-- SQLite is local-first. PostgreSQL would be better for deployed persistence.
+- SQLite is used locally and Postgres is used on Render for deployed persistence.
 - LLM responses are non-streaming. Streaming would improve perceived latency.
 - Handoff is simulated through metadata. A real agent inbox could consume `handoff_requested` conversations.
 - Current frontend has manual QA only. Backend has automated coverage for core behavior.
+- Prompt-injection protection could be strengthened with explicit instruction hierarchy, refusal rules for attempts to override system/developer instructions, retrieval filtering, and automated eval cases for malicious user prompts.
